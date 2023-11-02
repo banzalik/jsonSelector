@@ -38,8 +38,8 @@ document.querySelector('#app').innerHTML = `
 }
   </textarea><br><br>
   
+  <button type="button" id="copy">copy</button>
   <pre id="result">
-  123
   </pre>
 </form>
 `;
@@ -47,6 +47,7 @@ document.querySelector('#app').innerHTML = `
 
 const jspathInput = document.getElementById('jspath');
 const jsonDataInput = document.getElementById('json');
+let result = [];
 
 const update = () => {
     const jspath = jspathInput.value;
@@ -60,13 +61,23 @@ const update = () => {
       jsonData = {};
     }
     
-    const result = JSPATH.apply(jspath, jsonData);
+    result = JSPATH.apply(jspath, jsonData);
 
     document.getElementById('result').innerText = JSON.stringify(result, null, 2);
 }
 
+const copyContent = async () => {
+  try {
+    await navigator.clipboard.writeText(JSON.stringify(result, null, 2));
+    console.log('Content copied to clipboard');
+  } catch (err) {
+    console.error('Failed to copy: ', err);
+  }
+}
+
 const init = () => {
-    const  form = document.getElementById("form");
+    const form = document.getElementById("form");
+    const button = document.getElementById("copy");
 
     form.addEventListener("submit", (e) => {
       e.stopPropagation();
@@ -75,6 +86,7 @@ const init = () => {
 
     jspathInput.addEventListener("input", update);
     jsonDataInput.addEventListener("input", update);
+    button.addEventListener("click", copyContent)
 
   update();
 }
